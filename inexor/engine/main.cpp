@@ -125,7 +125,7 @@ void fatal(const char *s, ...)
     {
         defvformatstring(msg,s,s);
         // Temporarly disabled crash handler output (easylogging)
-        Log.default->critical(msg);
+        Log.std->critical(msg);
 
         #ifdef WIN32
             if(errors <= 1) MessageBox(NULL, msg, "Inexor fatal error", MB_OK|MB_SYSTEMMODAL);
@@ -142,7 +142,7 @@ void fatal(std::vector<std::string> &output)
     std::string completeoutput; 
     for(auto message : output) {
         // Temporarly disabled crash handler output (easylogging)
-        Log.default->critical(message);
+        Log.std->critical(message);
         completeoutput = inexor::util::fmt << completeoutput << message.c_str();
     }
 #ifdef WIN32
@@ -207,7 +207,7 @@ namespace screen {
         if(gamma == screen_manager.curgamma) return;
         screen_manager.curgamma = gamma;
         if(SDL_SetWindowBrightness(screen_manager.sdl_window, gamma/100.0f)==-1)
-            Log.default->error("Could not set gamma: {}", SDL_GetError());
+            Log.std->error("Could not set gamma: {}", SDL_GetError());
     });
 }
 }
@@ -763,7 +763,7 @@ int main(int argc, char **argv)
 
     numcpus = clamp(SDL_GetCPUCount(), 1, 16);
 
-    Log.default->debug("init: SDL");
+    Log.std->debug("init: SDL");
 
     int par = 0;
     #ifdef _DEBUG
@@ -772,18 +772,18 @@ int main(int argc, char **argv)
     if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
     const char *dir = addpackagedir(package_dir);
-    if(dir) Log.default->debug("Adding package directory: {}", dir);
+    if(dir) Log.std->debug("Adding package directory: {}", dir);
 
-    Log.default->debug("init: ENet");
+    Log.std->debug("init: ENet");
     if(enet_initialize()<0) fatal("Unable to initialize network module");
     atexit(enet_deinitialize);
     enet_time_set(0);
 
-    Log.default->debug("init: game");
+    Log.std->debug("init: game");
 
     game::initclient();
 
-    Log.default->debug("init: video");
+    Log.std->debug("init: video");
 
     SDL_SetHint(SDL_HINT_GRAB_KEYBOARD, "0");
     #if !defined(WIN32) && !defined(__APPLE__)
@@ -794,13 +794,13 @@ int main(int argc, char **argv)
     screen_manager.setupscreen(useddepthbits, usedfsaa);
     SDL_ShowCursor(SDL_FALSE);
 
-    Log.default->debug("init: gl");
+    Log.std->debug("init: gl");
     gl_checkextensions();
     gl_init(useddepthbits, usedfsaa);
     notexture = textureload("texture/inexor/notexture.png");
     if(!notexture) fatal("could not find core textures");
 
-    Log.default->debug("init: console");
+    Log.std->debug("init: console");
     if(!execfile("config/stdlib.cfg", false)) fatal("cannot find config files");
     if(!execfile("config/font.cfg", false)) fatal("cannot find font definitions");
     if(!setfont("default")) fatal("no default font specified");
@@ -808,19 +808,19 @@ int main(int argc, char **argv)
     inbetweenframes = true;
     renderbackground("initializing...");
 
-    Log.default->debug("init: effects");
+    Log.std->debug("init: effects");
     loadshaders();
     particleinit();
     initdecals();
 
-    Log.default->debug("init: world");
+    Log.std->debug("init: world");
     camera1 = player = game::iterdynents(0);
     emptymap(0, true, NULL, false);
 
-    Log.default->debug("init: sound");
+    Log.std->debug("init: sound");
     initsound();
 
-    Log.default->debug("init: cfg");
+    Log.std->debug("init: cfg");
     execfile("config/keymap.cfg");
     execfile("config/stdedit.cfg");
     execfile("config/menus.cfg");
@@ -851,7 +851,7 @@ int main(int argc, char **argv)
     loadhistory();
     if(initscript) execute(initscript);
 
-    Log.default->debug("init: mainloop");
+    Log.std->debug("init: mainloop");
 
     initmumble();
     resetfpshistory();
