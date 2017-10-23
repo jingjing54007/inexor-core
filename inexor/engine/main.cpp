@@ -16,52 +16,6 @@
 #include "inexor/engine/glexts.hpp"
 #include "inexor/engine/glemu.hpp"
 
-//template<typename T>
-//class SharedList
-//{
-//    size_t length = 0;
-//  public:
-//    void push_back(SharedVar<T> &x)
-//    {
-//        SharedVar.connect([]{ int id = length;});
-//        length++;
-//    }
-//};
-namespace inexor { namespace rendering {
-
-player player1;
-
-} } // ns inexor::rendering
-
-inexor::rendering::player player2;
-
-using namespace inexor;
-
-rendering::player player3;
-SharedList<rendering::player> testbliat;
-
-void testfunction(char *init, string num2)
-{
-
-}
-
-void testfunction(const char *init = "maybe im a string")
-{
-
-}
-
-void testfunction(int init,
-                  int initf);
-
-void testfunction(int init, float initf)
-{
-
-}
-SharedFunc(testfunction)
-
-void testfunction(int init,
-                  int initf) { }
-
 using namespace inexor::sound;
 using namespace inexor::io;
 using namespace inexor::rendering::screen;
@@ -726,7 +680,9 @@ ICOMMANDERR(subsystem_stop, "s", (char *s), std::string ccs{s}; metapp.stop(ccs)
 //    logging.setLogFormat(logger_name_s, pattern_s)
 //);
 
-SharedVar<char *> package_dir((char*)"media/core");
+// temporal workaround for Sharedlists
+SharedVar<char *> package_dir((char*)"media/essential");
+SharedVar<char *> package_dir2((char*)"media/additional");
 
 int main(int argc, char **argv)
 {
@@ -772,6 +728,8 @@ int main(int argc, char **argv)
     if(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_AUDIO|par)<0) fatal("Unable to initialize SDL: %s", SDL_GetError());
 
     const char *dir = addpackagedir(package_dir);
+    if(dir) Log.std->debug("Adding package directory: {}", dir);
+    dir = addpackagedir(package_dir2);
     if(dir) Log.std->debug("Adding package directory: {}", dir);
 
     Log.std->debug("init: ENet");
